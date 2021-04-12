@@ -73,12 +73,19 @@ const NotFound = {
 const UploadForm = {
   name: "upload-form",
   template: `
+    <h1>Image Upload</h1>
+    <p v-if="uploaded === true" class="alert alert-success">File Uploaded Successfully</p>
+    <ul v-if="errors.length" class="alert alert-danger">
+      <li v-for="error in errors">{{error}}</li>
+    </ul>
     <form @submit.prevent="uploadPhoto" id="uploadForm">
         <label for="description">Description: </label>
         <textarea id="desc" name="description" />
-        <label for="photo">Photo: </label>
+        <label for="photo">Photo Upload: </label>
         <input type="file" name="photo" />
-        <button type="submit" class="btn">Submit</button>
+        <div>
+          <button type="submit" class="btn">Submit</button>
+        </div>
     </form>
     `,
   methods: {
@@ -98,7 +105,11 @@ const UploadForm = {
           return response.json();
         })
         .then(function (jsonResponse) {
-          console.log(jsonResponse);
+          if (jsonResponse.res.errors) {
+            this.errors = jsonResponse.res.errors;
+          } else {
+            this.uploaded = true;
+          }
         })
         .catch(function (error) {
           console.log(error);
@@ -106,7 +117,10 @@ const UploadForm = {
     },
   },
   data() {
-    return {};
+    return {
+      errors: [],
+      uploaded: false,
+    };
   },
 };
 
