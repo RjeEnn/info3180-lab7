@@ -10,24 +10,23 @@ from app import app
 from flask import render_template, request, jsonify
 from .forms import UploadForm
 from werkzeug.utils import secure_filename
-import json
 
 ###
 # Routing for your application.
 ###
 @app.route('/api/upload', methods=['POST'])
 def upload():
-    upload = UploadForm()
+    form = UploadForm()
 
-    if request.method == 'POST' and upload.validate_on_submit():
-        image = request.files['img']
-        description = request.get('desc')
+    if request.method == 'POST' and form.validate_on_submit():
+        image = form.photo.data
+        description = form.description.data
         filename = secure_filename(image.filename)
         image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         res = {"message": "File Upload Successful", "filename": filename, "description": description}
     else:
-        res = {"errors": form_errors(upload)}
+        res = {"errors": form_errors(form)}
     return jsonify(res=res)
 
 # Please create all new routes and view functions above this route.
